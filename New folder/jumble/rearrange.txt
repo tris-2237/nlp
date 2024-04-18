@@ -1,0 +1,30 @@
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+nltk.download('punkt')
+nltk.download('stopwords')
+
+def rearrange_sentence(sentence):
+    # Tokenize the sentence into words
+    words = word_tokenize(sentence.lower())
+    
+    # Remove stopwords and punctuation
+    filtered_words = [word for word in words if word not in stopwords.words('english') and word.isalpha()]
+    
+    # Rearrange the words alphabetically
+    rearranged_words = sorted(filtered_words)
+    
+    # Convert the rearranged words back to a sentence
+    rearranged_sentence = ' '.join(rearranged_words)
+    
+    return rearranged_sentence
+
+def main():
+    input_sentence = "eggs and bacon with toast breakfast a had I"
+    rearranged_sentence = rearrange_sentence(input_sentence)
+    print("Original Sentence:", input_sentence)
+    print("Rearranged Sentence:", rearranged_sentence)
+
+if __name__ == "__main__":
+    main()

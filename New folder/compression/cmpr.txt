@@ -1,0 +1,35 @@
+import nltk
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+from nltk.tag import pos_tag
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+
+def compress_sentence(sentence):
+    # Tokenize the sentence into words
+    words = word_tokenize(sentence.lower())
+    
+    # Remove stopwords
+    filtered_words = [word for word in words if word not in stopwords.words('english')]
+
+    # Part-of-speech tagging
+    tagged_words = pos_tag(filtered_words)
+    
+    # Create a list of allowed part-of-speech tags
+    allowed_tags = ['NN', 'VB', 'JJ']
+
+    # Compress the sentence by selecting words with allowed tags
+    compressed_sentence = ' '.join(word for word, tag in tagged_words if tag in allowed_tags)
+
+    return compressed_sentence
+
+def main():
+    input_sentence = "The quick brown fox jumps over the lazy dog."
+    compressed_sentence = compress_sentence(input_sentence)
+    print("Original Sentence:", input_sentence)
+    print("Compressed Sentence:", compressed_sentence)
+
+if __name__ == "__main__":
+    main()

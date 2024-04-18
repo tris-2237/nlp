@@ -1,0 +1,40 @@
+from nltk.tokenize import sent_tokenize
+from collections import Counter
+import heapq
+
+def generate_abstractive_summary(text, num_sentences=3):
+    # Tokenize the text into sentences
+    sentences = sent_tokenize(text)
+
+    # Calculate the word frequency of each word in the text
+    word_freq = Counter(text.lower().split())
+
+    # Calculate the sentence scores based on the sum of word frequencies
+    sentence_scores = {}
+    for sentence in sentences:
+        for word in sentence.lower().split():
+            if word in word_freq:
+                if sentence not in sentence_scores:
+                    sentence_scores[sentence] = word_freq[word]
+                else:
+                    sentence_scores[sentence] += word_freq[word]
+
+    # Select the top N sentences with the highest scores
+    summary_sentences = heapq.nlargest(num_sentences, sentence_scores, key=sentence_scores.get)
+
+    # Join the selected sentences to form the summary
+    summary = ' '.join(summary_sentences)
+
+    return summary
+
+def main():
+    input_text = """
+    Yoga, an ancient practice originating in India, has evolved into a multifaceted discipline that encompasses physical, mental, and spiritual well-being. At its core, yoga is a holistic approach to harmonizing the body, mind, and spirit, aiming to achieve a state of inner peace, balance, and enlightenment. The physical aspect of yoga, known as asana practice, consists of various postures and movements designed to strengthen the body, increase flexibility, and improve overall health. From the dynamic flow of Vinyasa to the precise alignment of Iyengar, there is a diverse range of yoga styles to suit every individual's needs and preferences. Through regular practice of asanas, practitioners not only develop physical strength and agility but also cultivate awareness of breath, movement, and body alignment. In addition to asana practice, yoga incorporates breathwork, or pranayama, which focuses on conscious breathing techniques to calm the mind, increase energy, and deepen relaxation. Pranayama practices such as Ujjayi breath, Kapalabhati, and Nadi Shodhana help to purify the body, balance the nervous system, and quiet the fluctuations of the mind. Beyond the physical and breathwork aspects, yoga encompasses mindfulness and meditation practices that promote mental clarity, emotional resilience, and spiritual growth. Mindfulness meditation, rooted in ancient Buddhist traditions, involves cultivating present-moment awareness and non-judgmental observation of thoughts, feelings, and sensations. Through regular meditation practice, practitioners develop greater self-awareness, compassion, and inner peace. Yoga philosophy, as outlined in ancient texts like the Yoga Sutras of Patanjali, provides a comprehensive framework for ethical living, self-realization, and liberation from suffering. The eight limbs of yoga, including ethical guidelines (yamas and niyamas), physical postures (asanas), breath control (pranayama), sense withdrawal (pratyahara), concentration (dharana), meditation (dhyana), and absorption (samadhi), offer a roadmap for spiritual evolution and self-transformation. In today's fast-paced world, yoga serves as a sanctuary for individuals seeking refuge from stress, anxiety, and the demands of modern life. Whether practiced in a serene studio, a bustling city park, or the comfort of one's home, yoga offers a pathway to inner peace, balance, and self-discovery. As more people embrace yoga as a way of life, its transformative power continues to inspire and uplift individuals, communities, and societies worldwide.
+    """
+
+    summary = generate_abstractive_summary(input_text)
+    print("Abstractive Summary:")
+    print(summary)
+
+if __name__ == "__main__":
+    main()

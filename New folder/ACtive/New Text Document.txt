@@ -1,0 +1,64 @@
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.tag import pos_tag
+
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+def detect_voice(sentence):
+    # Tokenize the sentence into words
+    words = word_tokenize(sentence)
+    # Get the part-of-speech tags for the words
+    pos_tags = pos_tag(words)
+    # Check if the sentence is in active or passive voice
+    if 'by' in words and pos_tags[words.index('by') - 1][1] == 'VBN':
+        return 'passive'
+    elif 'by' not in words and ('VB' in [tag[1] for tag in pos_tags] or 'VBD' in [tag[1] for tag in pos_tags]):
+        return 'active'
+    else:
+        return None
+
+def convert_voice(sentence):
+    voice = detect_voice(sentence)
+    if voice == 'active':
+        # Convert active voice to passive voice
+        words = word_tokenize(sentence)
+        pos_tags = pos_tag(words)
+        verb_index = None
+        for i, (word, tag) in enumerate(pos_tags):
+            if tag.startswith('VB'):
+                verb_index = i
+                break
+        subject = ' '.join([word for word, tag in pos_tags[:verb_index]])
+        verb = words[verb_index]
+        remaining = ' '.join([word for word in words[verb_index+1:]])
+        converted_sentence = f"{remaining} {subject} {verb}ed"
+        return converted_sentence
+    elif voice == 'passive':
+        # Convert passive voice to active voice
+        words = word_tokenize(sentence)
+        by_index = words.index('by')
+        subject = ' '.join(words[by_index+1:])
+        verb_index = None
+        for i, word in enumerate(words):
+            if word.endswith('ed'):
+                verb_index = i
+                break
+        verb = words[verb_index]
+        remaining = ' '.join(words[:by_index])
+        converted_sentence = f"{subject} {verb} {remaining}"
+        return converted_sentence
+    else:
+        return "Unable to determine voice."
+
+def main():
+    sentence = "The cake was baked by Mary."
+    print("Original sentence:", sentence)
+    voice = detect_voice(sentence)
+    print("Voice:", voice)
+    converted_sentence = convert_voice(sentence)
+    print("Converted sentence:", converted_sentence)
+
+if __name__ == "__main__":
+    main()
+

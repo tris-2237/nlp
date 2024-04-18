@@ -1,0 +1,41 @@
+
+import nltk
+from nltk.tokenize import sent_tokenize
+import spacy
+
+nltk.download('punkt')
+
+# Load SpaCy model
+nlp = spacy.load("en_core_web_sm")
+
+def perform_ner(sentence):
+    doc = nlp(sentence)
+    entities = []
+    for ent in doc.ents:
+        entities.append((ent.text, ent.label_))
+    return entities
+
+def identify_critical_words(entities):
+    critical_words = set()
+    for entity, label in entities:
+        if label in ["PERSON", "ORG", "LOC"]:
+            words = entity.split()
+            for word in words:
+                critical_words.add(word.lower())
+    return critical_words
+
+def main():
+    input_sentence = "Once upon a time, in a faraway kingdom, there lived a brave knight named Sir Lancelot. He served King Arthur and protected the kingdom from dragons."
+    sentences = sent_tokenize(input_sentence)
+    all_entities = []
+    for sentence in sentences:
+        entities = perform_ner(sentence)
+        all_entities.extend(entities)
+    critical_words = identify_critical_words(all_entities)
+    print("Named Entities:")
+    print(all_entities)
+    print("\nCritical Words:")
+    print(critical_words)
+
+if __name__ == "__main__":
+    main()

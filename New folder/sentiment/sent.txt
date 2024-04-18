@@ -1,0 +1,33 @@
+import spacy
+
+# Load SpaCy model
+nlp = spacy.load("en_core_web_sm")
+
+def dependency_sentiment_analysis(sentence):
+    doc = nlp(sentence)
+    sentiment_score = 0
+    for token in doc:
+        # Check if token is a root and has children
+        if token.dep_ == "ROOT" and len(list(token.children)) > 0:
+            # Calculate sentiment based on children
+            for child in token.children:
+                # Check for negation
+                if child.dep_ == "neg":
+                    sentiment_score -= 1
+                # Check for modifiers
+                elif child.dep_ == "amod" or child.dep_ == "advmod":
+                    sentiment_score += 1
+    return sentiment_score
+
+def main():
+    input_sentence = "The movie was  very very good."
+    sentiment_score = dependency_sentiment_analysis(input_sentence)
+    if sentiment_score > 0:
+        print("Positive sentiment")
+    elif sentiment_score < 0:
+        print("Negative sentiment")
+    else:
+        print("Neutral sentiment")
+
+if __name__ == "__main__":
+    main()
